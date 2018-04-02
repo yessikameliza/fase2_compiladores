@@ -5,9 +5,11 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -26,6 +28,11 @@ import logic.ParseException;
 import logic.TokenMgrError;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 
 public class MainWindow extends JFrame implements ActionListener {
 
@@ -33,9 +40,18 @@ public class MainWindow extends JFrame implements ActionListener {
 	private JTextArea campoCodigo, campoArbol;
 	private static JTextArea  consola;
 	private JLabel arbol, txtConsola;
-	private JButton btnArchivo, compilar;
 	private static String temporal;
 	private AnalizadorLexico analizadorLexico;
+	private JMenu mnCompilar;
+	private JMenuBar menuBar;
+	private JMenu mnArchivo;
+	private JMenuItem mntmAbrir;
+	private JMenuItem mntmNuevo;
+	private JMenuItem mntmGuardar;
+	private JMenuItem mntmGuardarComo;
+	private JTextArea campoLinea;
+	private File fichero;
+	private JMenuItem mntmRunAs;
 	
 	public MainWindow() {
 		
@@ -43,16 +59,6 @@ public class MainWindow extends JFrame implements ActionListener {
 		getContentPane().setLayout(null);
 		this.setLocationRelativeTo(null);
 		setTitle("Compilador Huq");
-		
-		btnArchivo = new JButton("Archivo");
-		btnArchivo.addActionListener(this);
-		btnArchivo.setBounds(374, 5, 90, 23);
-		getContentPane().add(btnArchivo);
-		
-		compilar = new JButton("Compilar");
-		compilar.addActionListener(this);
-		compilar.setBounds(285, 5, 90, 23);
-		getContentPane().add(compilar);
 		
 	
 		
@@ -69,17 +75,39 @@ public class MainWindow extends JFrame implements ActionListener {
 		getContentPane().add(txtConsola);
 		
 		scrollCampoTexto = new JScrollPane();
-		scrollCampoTexto.setBounds(10, 36, 424, 251);
+		scrollCampoTexto.setBounds(54, 58, 424, 251);
 		getContentPane().add(scrollCampoTexto);
-
-		campoCodigo = new JTextArea();
-		campoCodigo.setWrapStyleWord(true);
-		campoCodigo.setLineWrap(true);
-		scrollCampoTexto.setViewportView(campoCodigo);
+		
+				campoCodigo = new JTextArea();
+				campoCodigo.addFocusListener(new FocusAdapter() {
+					@Override
+					public void focusGained(FocusEvent arg0) {
+						if (campoCodigo.getText().equals("\n\tIngrese aquí las sentencias a compilar.")) {
+							campoCodigo.setText("");
+						}
+					}
+					@Override
+					public void focusLost(FocusEvent arg0) {
+						if (campoCodigo.getText().equals("\n\tIngrese aquí las sentencias a compilar.")) {
+							campoCodigo.setText("");
+						}
+					}
+				});
+				campoCodigo.addKeyListener(new KeyAdapter() {
+					@Override
+					public void keyTyped(KeyEvent arg0) {
+						contarLineas();
+					}
+				});
+				
+				campoCodigo.setText("\n\tIngrese aquí las sentencias a compilar.");
+				scrollCampoTexto.setViewportView(campoCodigo);
+				campoCodigo.setWrapStyleWord(true);
+				campoCodigo.setLineWrap(true);
 		
 		campoArbol = new JTextArea();
 		campoArbol.setWrapStyleWord(true);
-		campoArbol.setBounds(500, 36, 424, 251);
+		campoArbol.setBounds(500, 59, 424, 251);
 		campoArbol.setLineWrap(true);
 		getContentPane().add(campoArbol);
 		
@@ -92,24 +120,17 @@ public class MainWindow extends JFrame implements ActionListener {
 		getContentPane().add(scrollConsola);
 		scrollConsola.setViewportView(consola);
 		
-		JMenuBar menuBar = new JMenuBar();
-		menuBar.setBounds(0, 7, 97, 21);
+		menuBar = new JMenuBar();
+		menuBar.setBounds(10, 11, 124, 21);
 		getContentPane().add(menuBar);
 		
-		JMenu mnArchivo = new JMenu("Archivo");
+		mnArchivo = new JMenu("Archivo");
 		menuBar.add(mnArchivo);
-		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		
-		temporal="";
-		
-	}
-
-	@Override
-	public void actionPerformed(ActionEvent event) {
-		// TODO Auto-generated method stub
-		if (event.getSource()==btnArchivo) {
-			
-			   try {
+		mntmAbrir = new JMenuItem("Abrir");
+		mntmAbrir.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				try {
 					System.out.println("Seleccione el codigo a analizar");
 					// ---------------------------------Seleccion JFile Chooser-------------------
 					// Creamos el objeto JFileChooser
@@ -128,7 +149,7 @@ public class MainWindow extends JFrame implements ActionListener {
 					if (seleccion == JFileChooser.APPROVE_OPTION) {
 
 						// Seleccionamos el fichero
-						File fichero = fc.getSelectedFile();
+						fichero = fc.getSelectedFile();
 						InputStream in = new FileInputStream(fichero);
 						analizadorLexico = new AnalizadorLexico(in);
 						analizadorLexico.TokenList();
@@ -151,31 +172,136 @@ public class MainWindow extends JFrame implements ActionListener {
 					ioe.printStackTrace();
 				}
 			
-		}
 		
-		if(event.getSource() == compilar) {
-			
-			if(!(campoCodigo.getText().trim().equals(""))) {
+			}
+		});
+		mnArchivo.add(mntmAbrir);
+		
+		mntmNuevo = new JMenuItem("Nuevo");
+		mntmNuevo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				campoCodigo.setText("\n\tIngrese aquí las sentencias a compilar.");
+				campoLinea.setText("1");
+				fichero = null;
 				
-				try {
-					InputStream stream = new ByteArrayInputStream(campoCodigo.getText().getBytes("UTF-8"));
-					analizadorLexico = new AnalizadorLexico(stream);
-					analizadorLexico.TokenList();
+			}
+		});
+		mnArchivo.add(mntmNuevo);
+		
+		mntmGuardar = new JMenuItem("Guardar");
+		mntmGuardar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				FileWriter archivos;
+				if (fichero != null) {
+					try {
+						archivos = new FileWriter(fichero);
+						BufferedWriter buff = new BufferedWriter(archivos);
+						buff.write(campoCodigo.getText());
+						buff.close();
+						JOptionPane.showMessageDialog(null, "Se ha guardado correctamente");
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						JOptionPane.showMessageDialog(null, "No se ha realizado la operación");
+					}
+				} else {
+					JOptionPane.showMessageDialog(null, "No se ha realizado la operación");
+				}
+			}
+		});
+		mnArchivo.add(mntmGuardar);
+		
+		mntmGuardarComo = new JMenuItem("Guardar como");
+		mntmGuardarComo.addActionListener(this);
+		mnArchivo.add(mntmGuardarComo);
+		
+		mnCompilar = new JMenu("Compilar");
+		menuBar.add(mnCompilar);
+		
+		mntmRunAs = new JMenuItem("Run as");
+		mntmRunAs.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				contarLineas();
+				System.out.println("Hkakhakshka");
+				if(!(campoCodigo.getText().trim().equals(""))) {
 					
-				} catch (ParseException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (UnsupportedEncodingException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			
+					try {
+						InputStream stream = new ByteArrayInputStream(campoCodigo.getText().getBytes("UTF-8"));
+						analizadorLexico = new AnalizadorLexico(stream);
+						analizadorLexico.TokenList();
+						
+					} catch (ParseException v) {
+						// TODO Auto-generated catch block
+						v.printStackTrace();
+					} catch (UnsupportedEncodingException v) {
+						// TODO Auto-generated catch block
+						v.printStackTrace();
+					}
 				
-			}else {
+					
+				}else {
+					
+					JOptionPane.showMessageDialog(null, "Ingrese codigo valido!", "Error", JOptionPane.ERROR_MESSAGE);	
+					}
+			}
+		});
+		mnCompilar.add(mntmRunAs);
+		
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBounds(10, 58, 25, 251);
+		getContentPane().add(scrollPane);
+		
+		campoLinea = new JTextArea();
+		scrollPane.setViewportView(campoLinea);
+		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+		
+		temporal="";
+		
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent event) {
+	     
+		if (event.getSource() == mntmGuardarComo) {
+			try {
 				
-				JOptionPane.showMessageDialog(null, "Ingrese codigo valido!", "Error", JOptionPane.ERROR_MESSAGE);	
+				/** llamamos el metodo que permite cargar la ventana */
+				String ruta;
+				JFileChooser file = new JFileChooser();
+				FileNameExtensionFilter filter = new FileNameExtensionFilter(".HUQ", "huq");
+				file.setFileFilter(filter);
+				if (file.showSaveDialog(null) == file.APPROVE_OPTION) {
+					ruta = file.getSelectedFile().getAbsolutePath();
+					if (new File(ruta).exists()) {
+						if (JOptionPane.OK_OPTION == JOptionPane.showConfirmDialog(this, 
+							"El fichero existe,deseas reemplazarlo?", "Titulo", JOptionPane.YES_NO_OPTION)) {
+							FileWriter archivos = new FileWriter(new File(ruta));
+							BufferedWriter buff = new BufferedWriter(archivos);
+							buff.write(campoCodigo.getText());
+							buff.close();
+						}
+					} else {
+						FileWriter archivos = new FileWriter(fichero = new File(ruta + ".huq"));
+						BufferedWriter buff = new BufferedWriter(archivos);
+						buff.write(campoCodigo.getText());
+						buff.close();
+					}
 				}
+				JOptionPane.showMessageDialog(null, "Guardado");
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		
+		
 		}
+			
+		
+		
+		
+		
+		
+				
+			
+		
 		
 	}
 
@@ -183,5 +309,14 @@ public class MainWindow extends JFrame implements ActionListener {
 	public static void escribirResultado(int n, String token, String lexema, int nL, int nC) {
 		temporal += n + "- Token:" + token + " Lexema:" + lexema + " Linea:" + nL + " Columna:" + nC+"\n";
 		consola.setText(temporal);
+	}
+	private void contarLineas() {
+
+		String a = "1\n";
+		for (int i = 2; i <= campoCodigo.getLineCount(); i++) {
+			a += i + "\n";
+		}
+		campoLinea.setText(a);
+
 	}
 }
