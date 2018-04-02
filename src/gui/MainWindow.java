@@ -24,6 +24,8 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import logic.AnalizadorLexico;
 import logic.ParseException;
 import logic.TokenMgrError;
+import javax.swing.JMenuBar;
+import javax.swing.JMenu;
 
 public class MainWindow extends JFrame implements ActionListener {
 
@@ -38,19 +40,19 @@ public class MainWindow extends JFrame implements ActionListener {
 	public MainWindow() {
 		
 		this.setSize(950,600);
-		this.setLayout(null);
+		getContentPane().setLayout(null);
 		this.setLocationRelativeTo(null);
 		setTitle("Compilador Huq");
 		
 		btnArchivo = new JButton("Archivo");
 		btnArchivo.addActionListener(this);
-		btnArchivo.setBounds(10, 5, 90, 23);
-		add(btnArchivo);
+		btnArchivo.setBounds(374, 5, 90, 23);
+		getContentPane().add(btnArchivo);
 		
 		compilar = new JButton("Compilar");
 		compilar.addActionListener(this);
-		compilar.setBounds(110, 5, 90, 23);
-		add(compilar);
+		compilar.setBounds(285, 5, 90, 23);
+		getContentPane().add(compilar);
 		
 	
 		
@@ -58,17 +60,17 @@ public class MainWindow extends JFrame implements ActionListener {
 		arbol.setFont(new Font("Tahoma", Font.BOLD, 14));
 		arbol.setForeground(Color.BLACK);
 		arbol.setBounds(500, 11, 290, 23);
-		add(arbol);
+		getContentPane().add(arbol);
 		
 		txtConsola = new JLabel("Consola");
 		txtConsola.setFont(new Font("Tahoma", Font.BOLD, 14));
 		txtConsola.setForeground(Color.BLACK);
 		txtConsola.setBounds(10, 330, 290, 23);
-		add(txtConsola);
+		getContentPane().add(txtConsola);
 		
 		scrollCampoTexto = new JScrollPane();
 		scrollCampoTexto.setBounds(10, 36, 424, 251);
-		add(scrollCampoTexto);
+		getContentPane().add(scrollCampoTexto);
 
 		campoCodigo = new JTextArea();
 		campoCodigo.setWrapStyleWord(true);
@@ -79,7 +81,7 @@ public class MainWindow extends JFrame implements ActionListener {
 		campoArbol.setWrapStyleWord(true);
 		campoArbol.setBounds(500, 36, 424, 251);
 		campoArbol.setLineWrap(true);
-		add(campoArbol);
+		getContentPane().add(campoArbol);
 		
 		consola = new JTextArea();
 		consola.setWrapStyleWord(true);
@@ -87,8 +89,15 @@ public class MainWindow extends JFrame implements ActionListener {
 		
 		scrollConsola = new JScrollPane();
 		scrollConsola.setBounds(10, 350, 900, 100);
-		add(scrollConsola);
+		getContentPane().add(scrollConsola);
 		scrollConsola.setViewportView(consola);
+		
+		JMenuBar menuBar = new JMenuBar();
+		menuBar.setBounds(0, 7, 97, 21);
+		getContentPane().add(menuBar);
+		
+		JMenu mnArchivo = new JMenu("Archivo");
+		menuBar.add(mnArchivo);
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		
 		temporal="";
@@ -175,5 +184,4 @@ public class MainWindow extends JFrame implements ActionListener {
 		temporal += n + "- Token:" + token + " Lexema:" + lexema + " Linea:" + nL + " Columna:" + nC+"\n";
 		consola.setText(temporal);
 	}
-	
 }
