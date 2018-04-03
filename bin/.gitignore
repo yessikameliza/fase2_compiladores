@@ -5,4 +5,14 @@
 /TokenMgrError.java
 /AnalizadorLexico.java
 /AnalizadorLexicoTokenManager.java
+/.gitignore
+/Analizador.jj
+/AnalizadorLexico.class
+/AnalizadorLexicoConstants.class
+/AnalizadorLexicoTokenManager.class
+/ParseException.class
+/SimpleCharStream.class
+/Token.class
+/TokenMgrError.class
 /gui/
+/logic/

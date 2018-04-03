@@ -33,13 +33,393 @@ System.out.println(e.getMessage());
 }
 }
 
+  static final public void Programa() throws ParseException {
+    Sentencias();
+    jj_consume_token(TERMINAL);
+  }
+
+  static final public void Sentencias() throws ParseException {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case TIPODATOENTERO:
+    case TIPODATOCADENA:
+      declaracion();
+      break;
+    case IDENTIFICADOR:
+      Asignacion();
+      break;
+    case PALABRARESERVADAESCRIBIR:
+      SentEscribir();
+      break;
+    case PALABRARESERVADALEER:
+      SentLeer();
+      break;
+    default:
+      jj_la1[0] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+  }
+
+  static final public void asigAuux() throws ParseException {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case LPAREN:
+    case IDENTIFICADOR:
+    case NUMERO:
+      expresion();
+      break;
+    case PALABRARESERVADALEER:
+      SentLeer();
+      break;
+    default:
+      jj_la1[1] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+  }
+
+  static final public void asigAux() throws ParseException {
+    jj_consume_token(IDENTIFICADOR);
+    jj_consume_token(ASIGNACION);
+    asigAuux();
+  }
+
+  static final public void Asignacion() throws ParseException {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case TIPODATOENTERO:
+    case IDENTIFICADOR:
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case TIPODATOENTERO:
+        jj_consume_token(TIPODATOENTERO);
+        break;
+      default:
+        jj_la1[2] = jj_gen;
+        ;
+      }
+      asigAux();
+      break;
+    case TIPODATOCADENA:
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case TIPODATOCADENA:
+        jj_consume_token(TIPODATOCADENA);
+        break;
+      default:
+        jj_la1[3] = jj_gen;
+        ;
+      }
+      asigAux();
+      break;
+    default:
+      jj_la1[4] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+  }
+
+  static final public void declaraux() throws ParseException {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case TIPODATOENTERO:
+      jj_consume_token(TIPODATOENTERO);
+      break;
+    case TIPODATOCADENA:
+      jj_consume_token(TIPODATOCADENA);
+      break;
+    default:
+      jj_la1[5] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+  }
+
+  static final public void declaracion() throws ParseException {
+    declaraux();
+    jj_consume_token(IDENTIFICADOR);
+    label_1:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case SEPARADOR:
+        ;
+        break;
+      default:
+        jj_la1[6] = jj_gen;
+        break label_1;
+      }
+      variable();
+    }
+  }
+
+  static final public void variable() throws ParseException {
+    jj_consume_token(SEPARADOR);
+    jj_consume_token(IDENTIFICADOR);
+  }
+
+  static final public void SentLeer() throws ParseException {
+    jj_consume_token(PALABRARESERVADALEER);
+    jj_consume_token(ABRIRCORCHETE);
+    jj_consume_token(CERRARCORCHETE);
+  }
+
+  static final public void SentEscribir() throws ParseException {
+    jj_consume_token(PALABRARESERVADAESCRIBIR);
+    jj_consume_token(ASIGNACION);
+    jj_consume_token(ABRIRCORCHETE);
+    jj_consume_token(CADENAS);
+    label_2:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case CADENAS:
+      case IDENTIFICADOR:
+        ;
+        break;
+      default:
+        jj_la1[7] = jj_gen;
+        break label_2;
+      }
+      subcadena();
+    }
+    jj_consume_token(CERRARCORCHETE);
+  }
+
+  static final public void subcadena() throws ParseException {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case CADENAS:
+      jj_consume_token(CADENAS);
+      break;
+    case IDENTIFICADOR:
+      jj_consume_token(IDENTIFICADOR);
+      break;
+    default:
+      jj_la1[8] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+  }
+
+  static final public void concatenar() throws ParseException {
+    jj_consume_token(CONCATENACION);
+    subcadena();
+  }
+
+  static final public void listSentencia() throws ParseException {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case PALABRARESERVADALEER:
+    case PALABRARESERVADAESCRIBIR:
+    case TIPODATOENTERO:
+    case TIPODATOCADENA:
+    case IDENTIFICADOR:
+      Sentencias();
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case PALABRARESERVADALEER:
+      case PALABRARESERVADASI:
+      case PALABRARESERVADAESCRIBIR:
+      case TIPODATOENTERO:
+      case TIPODATOCADENA:
+      case IDENTIFICADOR:
+        listSentencia();
+        break;
+      default:
+        jj_la1[9] = jj_gen;
+        ;
+      }
+      break;
+    case PALABRARESERVADASI:
+      SentenciaSi();
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case PALABRARESERVADALEER:
+      case PALABRARESERVADASI:
+      case PALABRARESERVADAESCRIBIR:
+      case TIPODATOENTERO:
+      case TIPODATOCADENA:
+      case IDENTIFICADOR:
+        listSentencia();
+        break;
+      default:
+        jj_la1[10] = jj_gen;
+        ;
+      }
+      break;
+    default:
+      jj_la1[11] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+  }
+
+  static final public void SentenciaSi() throws ParseException {
+    jj_consume_token(PALABRARESERVADASI);
+    condicion();
+    jj_consume_token(PALABRARESERVADAENTONCES);
+    listSentencia();
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case PALABRARESERVADASINO:
+      jj_consume_token(PALABRARESERVADASINO);
+      listSentencia();
+      break;
+    default:
+      jj_la1[12] = jj_gen;
+      ;
+    }
+    jj_consume_token(PALABRARESERVADAFINSI);
+  }
+
+  static final public void condicionSimple() throws ParseException {
+    expresion();
+    comparacion();
+    expresion();
+  }
+
+  static final public void comparacion() throws ParseException {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case OPERADORCOMPARACIONMAYOR:
+      jj_consume_token(OPERADORCOMPARACIONMAYOR);
+      break;
+    case OPERADORCOMPARACIONMENOR:
+      jj_consume_token(OPERADORCOMPARACIONMENOR);
+      break;
+    case OPERADORCOMPARACIONMAYORIGUAL:
+      jj_consume_token(OPERADORCOMPARACIONMAYORIGUAL);
+      break;
+    case OPERADORCOMPARACIONMENORIGUAL:
+      jj_consume_token(OPERADORCOMPARACIONMENORIGUAL);
+      break;
+    case OPERADORCOMPARACIONDIFERENTE:
+      jj_consume_token(OPERADORCOMPARACIONDIFERENTE);
+      break;
+    case OPERADORCOMPARACIONIGUAL:
+      jj_consume_token(OPERADORCOMPARACIONIGUAL);
+      break;
+    default:
+      jj_la1[13] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+  }
+
+  static final public void condicion() throws ParseException {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case 36:
+      jj_consume_token(36);
+      condicionSimple();
+      break;
+    case LPAREN:
+    case IDENTIFICADOR:
+    case NUMERO:
+      condicionSimple();
+      condicion();
+      break;
+    default:
+      jj_la1[14] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+  }
+
+  static final public void condAux() throws ParseException {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case LPAREN:
+    case IDENTIFICADOR:
+    case NUMERO:
+      condicionSimple();
+      break;
+    default:
+      jj_la1[15] = jj_gen;
+      ;
+    }
+    condicion();
+  }
+
+  static final public void expresion() throws ParseException {
+    term();
+    label_3:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case OPERADORSUMA:
+      case OPERADORMENOS:
+        ;
+        break;
+      default:
+        jj_la1[16] = jj_gen;
+        break label_3;
+      }
+      operadorAdic();
+      term();
+    }
+  }
+
+  static final public void operadorAdic() throws ParseException {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case OPERADORSUMA:
+      jj_consume_token(OPERADORSUMA);
+      break;
+    case OPERADORMENOS:
+      jj_consume_token(OPERADORMENOS);
+      break;
+    default:
+      jj_la1[17] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+  }
+
+  static final public void operadorArit() throws ParseException {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case OPERADORMULTIPLICACION:
+      jj_consume_token(OPERADORMULTIPLICACION);
+      break;
+    case OPERADORDIVIDIDO:
+      jj_consume_token(OPERADORDIVIDIDO);
+      break;
+    default:
+      jj_la1[18] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+  }
+
+  static final public void term() throws ParseException {
+    factor();
+    label_4:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case OPERADORMULTIPLICACION:
+      case OPERADORDIVIDIDO:
+        ;
+        break;
+      default:
+        jj_la1[19] = jj_gen;
+        break label_4;
+      }
+      operadorArit();
+      factor();
+    }
+  }
+
+  static final public void factor() throws ParseException {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case LPAREN:
+      jj_consume_token(LPAREN);
+      expresion();
+      jj_consume_token(RPAREN);
+      break;
+    case NUMERO:
+      jj_consume_token(NUMERO);
+      break;
+    case IDENTIFICADOR:
+      jj_consume_token(IDENTIFICADOR);
+      break;
+    default:
+      jj_la1[20] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+  }
+
 /**
 * Reconoce el contenido completo de un archivo
 *
 * TokenList -> (TokenElement)*
 */
   static final public void TokenList() throws ParseException {
-    label_1:
+    label_5:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case TERMINAL:
@@ -67,8 +447,8 @@ System.out.println(e.getMessage());
         ;
         break;
       default:
-        jj_la1[0] = jj_gen;
-        break label_1;
+        jj_la1[21] = jj_gen;
+        break label_5;
       }
       TokenElement();
     }
@@ -169,40 +549,39 @@ pieza);
                              numero++; grabarDatosPieza(numero, "Tipo de dato cadena", pieza);
       break;
     default:
-      jj_la1[1] = jj_gen;
+      jj_la1[22] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
   }
 
   static private boolean jj_initialized_once = false;
-  /** Generated Token Manager. */
   static public AnalizadorLexicoTokenManager token_source;
   static SimpleCharStream jj_input_stream;
-  /** Current token. */
-  static public Token token;
-  /** Next token. */
-  static public Token jj_nt;
+  static public Token token, jj_nt;
   static private int jj_ntk;
   static private int jj_gen;
-  static final private int[] jj_la1 = new int[2];
+  static final private int[] jj_la1 = new int[23];
   static private int[] jj_la1_0;
+  static private int[] jj_la1_1;
   static {
-      jj_la1_init_0();
+      jj_la1_0();
+      jj_la1_1();
    }
-   private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0xfffffc0,0xfffffc0,};
+   private static void jj_la1_0() {
+      jj_la1_0 = new int[] {0x20007080,0x64000080,0x2000,0x4000,0x20006000,0x6000,0x400000,0x30000000,0x30000000,0x20007180,0x20007180,0x20007180,0x400,0x1f8000,0x64000000,0x64000000,0x0,0x0,0x0,0x0,0x64000000,0xb3a1ffc0,0xb3a1ffc0,};
+   }
+   private static void jj_la1_1() {
+      jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x10,0x0,0x9,0x9,0x6,0x6,0x0,0xf,0xf,};
    }
 
-  /** Constructor with InputStream. */
   public AnalizadorLexico(java.io.InputStream stream) {
      this(stream, null);
   }
-  /** Constructor with InputStream and supplied encoding */
   public AnalizadorLexico(java.io.InputStream stream, String encoding) {
     if (jj_initialized_once) {
-      System.out.println("ERROR: Second call to constructor of static parser.  ");
-      System.out.println("       You must either use ReInit() or set the JavaCC option STATIC to false");
+      System.out.println("ERROR: Second call to constructor of static parser.  You must");
+      System.out.println("       either use ReInit() or set the JavaCC option STATIC to false");
       System.out.println("       during parser generation.");
       throw new Error();
     }
@@ -212,28 +591,25 @@ pieza);
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 2; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 23; i++) jj_la1[i] = -1;
   }
 
-  /** Reinitialise. */
   static public void ReInit(java.io.InputStream stream) {
      ReInit(stream, null);
   }
-  /** Reinitialise. */
   static public void ReInit(java.io.InputStream stream, String encoding) {
     try { jj_input_stream.ReInit(stream, encoding, 1, 1); } catch(java.io.UnsupportedEncodingException e) { throw new RuntimeException(e); }
     token_source.ReInit(jj_input_stream);
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 2; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 23; i++) jj_la1[i] = -1;
   }
 
-  /** Constructor. */
   public AnalizadorLexico(java.io.Reader stream) {
     if (jj_initialized_once) {
-      System.out.println("ERROR: Second call to constructor of static parser. ");
-      System.out.println("       You must either use ReInit() or set the JavaCC option STATIC to false");
+      System.out.println("ERROR: Second call to constructor of static parser.  You must");
+      System.out.println("       either use ReInit() or set the JavaCC option STATIC to false");
       System.out.println("       during parser generation.");
       throw new Error();
     }
@@ -243,24 +619,22 @@ pieza);
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 2; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 23; i++) jj_la1[i] = -1;
   }
 
-  /** Reinitialise. */
   static public void ReInit(java.io.Reader stream) {
     jj_input_stream.ReInit(stream, 1, 1);
     token_source.ReInit(jj_input_stream);
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 2; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 23; i++) jj_la1[i] = -1;
   }
 
-  /** Constructor with generated Token Manager. */
   public AnalizadorLexico(AnalizadorLexicoTokenManager tm) {
     if (jj_initialized_once) {
-      System.out.println("ERROR: Second call to constructor of static parser. ");
-      System.out.println("       You must either use ReInit() or set the JavaCC option STATIC to false");
+      System.out.println("ERROR: Second call to constructor of static parser.  You must");
+      System.out.println("       either use ReInit() or set the JavaCC option STATIC to false");
       System.out.println("       during parser generation.");
       throw new Error();
     }
@@ -269,19 +643,18 @@ pieza);
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 2; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 23; i++) jj_la1[i] = -1;
   }
 
-  /** Reinitialise. */
   public void ReInit(AnalizadorLexicoTokenManager tm) {
     token_source = tm;
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 2; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 23; i++) jj_la1[i] = -1;
   }
 
-  static private Token jj_consume_token(int kind) throws ParseException {
+  static final private Token jj_consume_token(int kind) throws ParseException {
     Token oldToken;
     if ((oldToken = token).next != null) token = token.next;
     else token = token.next = token_source.getNextToken();
@@ -295,8 +668,6 @@ pieza);
     throw generateParseException();
   }
 
-
-/** Get the next Token. */
   static final public Token getNextToken() {
     if (token.next != null) token = token.next;
     else token = token.next = token_source.getNextToken();
@@ -305,7 +676,6 @@ pieza);
     return token;
   }
 
-/** Get the specific Token. */
   static final public Token getToken(int index) {
     Token t = token;
     for (int i = 0; i < index; i++) {
@@ -315,53 +685,56 @@ pieza);
     return t;
   }
 
-  static private int jj_ntk() {
+  static final private int jj_ntk() {
     if ((jj_nt=token.next) == null)
       return (jj_ntk = (token.next=token_source.getNextToken()).kind);
     else
       return (jj_ntk = jj_nt.kind);
   }
 
-  static private java.util.List<int[]> jj_expentries = new java.util.ArrayList<int[]>();
+  static private java.util.Vector jj_expentries = new java.util.Vector();
   static private int[] jj_expentry;
   static private int jj_kind = -1;
 
-  /** Generate ParseException. */
   static public ParseException generateParseException() {
-    jj_expentries.clear();
-    boolean[] la1tokens = new boolean[28];
+    jj_expentries.removeAllElements();
+    boolean[] la1tokens = new boolean[37];
+    for (int i = 0; i < 37; i++) {
+      la1tokens[i] = false;
+    }
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
     }
-    for (int i = 0; i < 2; i++) {
+    for (int i = 0; i < 23; i++) {
       if (jj_la1[i] == jj_gen) {
         for (int j = 0; j < 32; j++) {
           if ((jj_la1_0[i] & (1<<j)) != 0) {
             la1tokens[j] = true;
           }
+          if ((jj_la1_1[i] & (1<<j)) != 0) {
+            la1tokens[32+j] = true;
+          }
         }
       }
     }
-    for (int i = 0; i < 28; i++) {
+    for (int i = 0; i < 37; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;
-        jj_expentries.add(jj_expentry);
+        jj_expentries.addElement(jj_expentry);
       }
     }
     int[][] exptokseq = new int[jj_expentries.size()][];
     for (int i = 0; i < jj_expentries.size(); i++) {
-      exptokseq[i] = jj_expentries.get(i);
+      exptokseq[i] = (int[])jj_expentries.elementAt(i);
     }
     return new ParseException(token, exptokseq, tokenImage);
   }
 
-  /** Enable tracing. */
   static final public void enable_tracing() {
   }
 
-  /** Disable tracing. */
   static final public void disable_tracing() {
   }
 

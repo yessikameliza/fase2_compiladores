@@ -74,10 +74,15 @@ TOKEN : /*  OPERADOR COMPARACION*/
 {
 < OPERADORCOMPARACIONMAYOR : ">" >
 | <OPERADORCOMPARACIONMENOR : "<" >
+| <OPERADORCOMPARACIONMAYORIGUAL : ">=" >
+| <OPERADORCOMPARACIONMENORIGUAL : "<=" >
+| <OPERADORCOMPARACIONDIFERENTE : "!=" >
+| <OPERADORCOMPARACIONIGUAL : "==" >
 }
 TOKEN : /*  CONCATENACION*/
 {
 < CONCATENACION : "@" >
+|<SEPARADOR: ",">
 
 }
 TOKEN : /* COMENTARIO  */
@@ -90,6 +95,8 @@ TOKEN : /* CORCHETES */
 {
   < ABRIRCORCHETE : "[" >
 |<  CERRARCORCHETE : "]" >
+|<LPAREN: "(">
+| <RPAREN: ")">
 
 }
 
@@ -100,6 +107,7 @@ TOKEN : /* CADENA  DE TEXTO */
 TOKEN : /* IDENTIFICADOR*/
 {
 < IDENTIFICADOR : (["a"-"z","A"-"Z"])*>
+|<NUMERO :(["0"-"9"])*>
 }
 
 TOKEN : /* ASIGNACION */
@@ -114,7 +122,109 @@ TOKEN : /* OPERADOR ARITMETICO */
 |< OPERADORMENOS : "-" >
 }
 
+void Programa():
+{}
+{
+Sentencias() <TERMINAL>
+}
+void Sentencias(): {}
+{
+	 declaracion() | Asignacion()| SentEscribir() | SentLeer() 
+}
+void asigAuux():{}
+{
+	 expresion()| SentLeer() 
+}
+void asigAux():{}
+{
+	<IDENTIFICADOR> <ASIGNACION> asigAuux() 
+}
 
+void Asignacion(): {}
+{
+[<TIPODATOENTERO>] asigAux() | [<TIPODATOCADENA>] asigAux()
+	
+}
+void declaraux(): {}
+{
+	<TIPODATOENTERO> | <TIPODATOCADENA>
+}
+void declaracion(): {}
+{
+	declaraux() <IDENTIFICADOR>(variable())* 
+}
+void variable ():{}
+{
+	<SEPARADOR><IDENTIFICADOR>
+}
+void SentLeer ():{}
+{
+	<PALABRARESERVADALEER><ABRIRCORCHETE><CERRARCORCHETE>
+}
+void SentEscribir ():{}
+{
+	<PALABRARESERVADAESCRIBIR><ASIGNACION><ABRIRCORCHETE>(<CADENAS>(subcadena())*)<CERRARCORCHETE>
+}
+void subcadena ():{}
+{
+	<CADENAS>|<IDENTIFICADOR>
+}
+void concatenar ():{}
+{
+	<CONCATENACION> subcadena()
+}
+void listSentencia ():{}
+{
+	(Sentencias()[listSentencia()] | SentenciaSi()[listSentencia()])
+}
+void SentenciaSi ():{}
+{
+ 	<PALABRARESERVADASI> condicion() <PALABRARESERVADAENTONCES> listSentencia()[<PALABRARESERVADASINO>listSentencia()] <PALABRARESERVADAFINSI>
+}
+void condicionSimple():{}
+{
+	expresion() comparacion() expresion()
+}
+void comparacion():{}
+{
+	<OPERADORCOMPARACIONMAYOR>| <OPERADORCOMPARACIONMENOR>| <OPERADORCOMPARACIONMAYORIGUAL>
+| <OPERADORCOMPARACIONMENORIGUAL >
+| <OPERADORCOMPARACIONDIFERENTE>
+| <OPERADORCOMPARACIONIGUAL>
+}
+
+void condicion():{}
+{
+	 "y" condicionSimple() | condicionSimple() condicion()
+}
+void condAux():{}
+{
+	[condicionSimple()]condicion()
+}
+void expresion(): {}
+{
+term() (operadorAdic() term())*
+}
+void operadorAdic(): {}
+{
+<OPERADORSUMA> | <OPERADORMENOS>
+}
+void operadorArit(): {}
+{
+<OPERADORMULTIPLICACION> | < OPERADORDIVIDIDO >
+
+}
+void term() : {}
+{
+factor()(operadorArit() factor())*
+}
+void factor() : {}
+{
+<LPAREN> expresion() <RPAREN>
+| <NUMERO>
+| <IDENTIFICADOR>
+
+}
 
 
 
@@ -123,8 +233,7 @@ TOKEN : /* OPERADOR ARITMETICO */
 *
 * TokenList -> (TokenElement)*
 */
-void TokenList():
-{}
+void TokenList():{}
 {
 ( TokenElement() )*
 }
